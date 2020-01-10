@@ -1,0 +1,42 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Customer",
+						"type": "DatasetReference"
+					},
+					"name": "Customer"
+				},
+				{
+					"dataset": {
+						"referenceName": "OrderLinkService",
+						"type": "DatasetReference"
+					},
+					"name": "Order"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "TargetCustomer",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Lookup1"
+				},
+				{
+					"name": "Filter1"
+				}
+			],
+			"script": "\n\nsource(output(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from [dbo].[Customer] where country=\\'USA\\'',\n\tformat: 'query') ~> Customer\nsource(output(\n\t\tId as integer,\n\t\tOrderDate as timestamp,\n\t\tOrderNumber as string,\n\t\tCustomerId as integer,\n\t\tTotalAmount as decimal(12,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Order\nCustomer, Order lookup(Customer@Id == CustomerId,\n\tbroadcast: 'none')~> Lookup1\nLookup1 filter(greater(TotalAmount, 5000)) ~> Filter1\nFilter1 sink(input(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tFirstName,\n\t\tLastName,\n\t\tCity,\n\t\tCountry,\n\t\tPhone\n\t)) ~> sink1"
+		}
+	}
+}
