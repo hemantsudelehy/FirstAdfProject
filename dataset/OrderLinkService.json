@@ -1,0 +1,44 @@
+{
+	"name": "OrderLinkService",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "OrderLinkService",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "OrderDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "OrderNumber",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CustomerId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "TotalAmount",
+				"type": "decimal",
+				"precision": 12,
+				"scale": 2
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Order"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
