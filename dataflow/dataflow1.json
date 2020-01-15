@@ -6,14 +6,14 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Customer",
+						"referenceName": "copytable1",
 						"type": "DatasetReference"
 					},
 					"name": "Customer"
 				},
 				{
 					"dataset": {
-						"referenceName": "OrderLinkService",
+						"referenceName": "OrderTable",
 						"type": "DatasetReference"
 					},
 					"name": "Order"
@@ -22,7 +22,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "TargetCustomer",
+						"referenceName": "pastetable1",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -30,13 +30,13 @@
 			],
 			"transformations": [
 				{
-					"name": "Lookup1"
+					"name": "Join1"
 				},
 				{
 					"name": "Filter1"
 				}
 			],
-			"script": "\n\nsource(output(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from [dbo].[Customer] where country=\\'USA\\'',\n\tformat: 'query') ~> Customer\nsource(output(\n\t\tId as integer,\n\t\tOrderDate as timestamp,\n\t\tOrderNumber as string,\n\t\tCustomerId as integer,\n\t\tTotalAmount as decimal(12,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> Order\nCustomer, Order lookup(Customer@Id == CustomerId,\n\tbroadcast: 'none')~> Lookup1\nLookup1 filter(greater(TotalAmount, 5000)) ~> Filter1\nFilter1 sink(input(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tFirstName,\n\t\tLastName,\n\t\tCity,\n\t\tCountry,\n\t\tPhone\n\t)) ~> sink1"
+			"script": "\n\nsource(output(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select * from customer where Country=\\'USA\\' and id in (select CustomerId from [dbo].[Order] where TotalAmount > 5000)',\n\tformat: 'query') ~> Customer\nsource(output(\n\t\tId as integer,\n\t\tOrderDate as timestamp,\n\t\tOrderNumber as string,\n\t\tCustomerId as integer,\n\t\tTotalAmount as decimal(12,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tpartitionBy('hash', 2,\n\t\tId\n\t)) ~> Order\nCustomer, Order join(Customer@Id == CustomerId,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> Join1\nJoin1 filter(equals(City, \"Denver\")) ~> Filter1\nFilter1 sink(input(\n\t\tId as integer,\n\t\tFirstName as string,\n\t\tLastName as string,\n\t\tCity as string,\n\t\tCountry as string,\n\t\tPhone as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tFirstName = City,\n\t\tLastName,\n\t\tCity,\n\t\tCountry,\n\t\tPhone\n\t)) ~> sink1"
 		}
 	}
 }
