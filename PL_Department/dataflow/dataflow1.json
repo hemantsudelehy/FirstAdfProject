@@ -1,0 +1,27 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SQL_tblUserInfo",
+						"type": "DatasetReference"
+					},
+					"name": "UserInformation"
+				},
+				{
+					"dataset": {
+						"referenceName": "ASQL_LicenseType",
+						"type": "DatasetReference"
+					},
+					"name": "LicenseType"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"script": "\n\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: '(SELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') THEN \\'NLMS\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,ui.ui_loan_originator_id as [License Number]\\n,\\'\\' as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nwhere ui.ui_type != \\'Cons\\'\\nand ui.ui_suspended = \\'N\\'\\nAND (ui_loan_originator_id != \\'\\' AND ui_loan_originator_id is not null)\\n)\\nUNION\\n(\\nSELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') AND usl.StateLicenseId IS NULL THEN \\'NLMS\\'\\n\tWHEN usl.StateLicenseId IS NOT NULL THEN \\'Originator\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,usl.StateLicenseId as [License Number]\\n,usl.StateAbbreviation as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nInner join UserStateLicense usl on ui.ui_id = usl.userid\\nAND ui.ui_type != \\'Cons\\'\\nAND ui.ui_suspended = \\'N\\'\\n)\\n\\nOrder by ui.ui_last_name, ui.ui_first_name',\n\tformat: 'query') ~> UserInformation\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: '(SELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') THEN \\'NLMS\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,ui.ui_loan_originator_id as [License Number]\\n,\\'\\' as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom dbo.user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nwhere ui.ui_type != \\'Cons\\'\\nand ui.ui_suspended = \\'N\\'\\nAND (ui_loan_originator_id != \\'\\' AND ui_loan_originator_id is not null)\\n)\\nUNION\\n(\\nSELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') AND usl.StateLicenseId IS NULL THEN \\'NLMS\\'\\n\tWHEN usl.StateLicenseId IS NOT NULL THEN \\'Originator\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,usl.StateLicenseId as [License Number]\\n,usl.StateAbbreviation as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom dbo.user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nInner join UserStateLicense usl on ui.ui_id = usl.userid\\nAND ui.ui_type != \\'Cons\\'\\nAND ui.ui_suspended = \\'N\\'\\n)',\n\tformat: 'query') ~> LicenseType"
+		}
+	}
+}
