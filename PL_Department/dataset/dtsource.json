@@ -1,0 +1,12 @@
+{
+	"name": "dtsource",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LK_Mymachine",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
