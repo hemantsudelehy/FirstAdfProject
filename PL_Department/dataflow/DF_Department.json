@@ -1,0 +1,42 @@
+{
+	"name": "DF_Department",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "tblDepartment",
+						"type": "DatasetReference"
+					},
+					"name": "Department"
+				},
+				{
+					"dataset": {
+						"referenceName": "tblStatus",
+						"type": "DatasetReference"
+					},
+					"name": "Status"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ASQL_Department",
+						"type": "DatasetReference"
+					},
+					"name": "MigrateDepartment"
+				}
+			],
+			"transformations": [
+				{
+					"name": "IfDepartmentExist"
+				},
+				{
+					"name": "AlterRow1"
+				}
+			],
+			"script": "\n\nsource(output(\n\t\tdeptid as string,\n\t\t{Department Name} as string,\n\t\t{Department Description} as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedbyId as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select Newid() as deptid, c.ch_description as [Department Name], c.ch_description as [Department Description], \\'6CA410A9-CD01-495C-B2FF-FD0880F5FA0F\\' as deptDefSTATid, \\nCONVERT(Bit, 1) as deptActive, \\'DCA6C8B5-BFA7-46D6-9628-41442B22D262\\' as UpdatedbyId, dateadd(hh,-6,getdate()) as UpdatedDate, Convert(varchar(80), NULL) as deptDefaultModule, CONVERT(Bit, 0) as ClientAccess\\nfrom dbo.channels c where c.ch_type = 7',\n\tformat: 'query') ~> Department\nsource(output(\n\t\tstatID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT statID FROM tbkstatus WHERE statname= \\'Closing Documents Received (R)\\'',\n\tformat: 'query') ~> Status\nDepartment, Status exists(deptDefSTATid == statID,\n\tnegate:false,\n\tbroadcast: 'none')~> IfDepartmentExist\nIfDepartmentExist alterRow(upsertIf(true())) ~> AlterRow1\nAlterRow1 sink(input(\n\t\tdeptID as string,\n\t\tdeptName as string,\n\t\tdeptDescription as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedByID as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['deptid'],\n\tformat: 'table',\n\tmapColumn(\n\t\tdeptID = deptid,\n\t\tdeptName = {Department Name},\n\t\tdeptDescription = {Department Description},\n\t\tdeptDefSTATid,\n\t\tdeptActive,\n\t\tUpdatedByID = UpdatedbyId,\n\t\tUpdatedDate,\n\t\tdeptDefaultModule,\n\t\tClientAccess\n\t)) ~> MigrateDepartment"
+		}
+	}
+}
