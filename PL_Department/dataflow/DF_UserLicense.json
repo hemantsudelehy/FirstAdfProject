@@ -1,0 +1,49 @@
+{
+	"name": "DF_UserLicense",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SQL_tblUserInfo",
+						"type": "DatasetReference"
+					},
+					"name": "UserInformation"
+				},
+				{
+					"dataset": {
+						"referenceName": "ASQL_LicenseType",
+						"type": "DatasetReference"
+					},
+					"name": "LicenseType"
+				},
+				{
+					"dataset": {
+						"referenceName": "ASQL_tblUser",
+						"type": "DatasetReference"
+					},
+					"name": "User"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "ASQL_tbmUserLicense",
+						"type": "DatasetReference"
+					},
+					"name": "TargetUserLicense"
+				}
+			],
+			"transformations": [
+				{
+					"name": "GetLicenseTypeId"
+				},
+				{
+					"name": "GetUserId"
+				}
+			],
+			"script": "\n\nsource(output(\n\t\t{Last Name} as string,\n\t\t{First Name} as string,\n\t\t{User Name} as string,\n\t\tLicenseType as string,\n\t\t{License Number} as string,\n\t\t{License State} as string,\n\t\t{License Activation Date} as string,\n\t\t{License Expiration Date} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: '(SELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') THEN \\'NMLS\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,ui.ui_loan_originator_id as [License Number]\\n,\\'\\' as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nwhere ui.ui_type != \\'Cons\\'\\nand ui.ui_suspended = \\'N\\'\\nAND (ui_loan_originator_id != \\'\\' AND ui_loan_originator_id is not null)\\n)\\nUNION\\n(\\nSELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') AND usl.StateLicenseId IS NULL THEN \\'NMLS\\'\\n\tWHEN usl.StateLicenseId IS NOT NULL THEN \\'Originator\\'\\n\tELSE \\'\\'\\n\tEND as [LicenseType]\\n,usl.StateLicenseId as [License Number]\\n,usl.StateAbbreviation as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nInner join UserStateLicense usl on ui.ui_id = usl.userid\\nAND ui.ui_type != \\'Cons\\'\\nAND ui.ui_suspended = \\'N\\'\\n)',\n\tformat: 'query') ~> UserInformation\nsource(output(\n\t\tTypeId as integer,\n\t\tDescription as string,\n\t\tLoanLevelFieldId as integer,\n\t\tLoanLevelExemptFieldId as integer,\n\t\tActivationDate as integer,\n\t\tExpirationDate as integer,\n\t\tState as integer,\n\t\tIsNMLS as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> LicenseType\nsource(output(\n\t\tuserID as string,\n\t\tuserLogonName as string,\n\t\tuserPassword as string,\n\t\tuserPWexpDt as timestamp,\n\t\tuserFirstName as string,\n\t\tuserLastName as string,\n\t\tuserBRANid as string,\n\t\tuserAcctExec as boolean,\n\t\tuserActive as boolean,\n\t\tuserPhone as string,\n\t\tuserFax as string,\n\t\tuserEmail as string,\n\t\tuserRSTYid as integer,\n\t\tuserCommissionPerc as decimal(16,6),\n\t\tUpdatedByID as string,\n\t\tUpdatedDate as timestamp,\n\t\tuserposID as integer,\n\t\tuserMI as string,\n\t\tuserEXT as string,\n\t\tuserLogonAccountIsLocked as boolean,\n\t\tuserConsecLogonFailures as integer,\n\t\tuserForcePWChange as boolean,\n\t\tuserClientID as integer,\n\t\tuserType as string,\n\t\tuserIsPrice as boolean,\n\t\tuserIsManager as boolean,\n\t\tuserManager as string,\n\t\tuserSecretQuestion as string,\n\t\tuserSecretAnswer as string,\n\t\tuserAuthToken as string,\n\t\tuserAuthTokenDate as timestamp,\n\t\tuserAuthTokenEmail as string,\n\t\tuserAuthTokenData as string,\n\t\tuserAuthTokenPhone as string,\n\t\tuserAuthTokenSmsProviderId as string,\n\t\tuserLastSuccessfullLogin as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> User\nGetUserId, LicenseType join(LicenseType == Description,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> GetLicenseTypeId\nUserInformation, User join({User Name} == userLogonName,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> GetUserId\nGetLicenseTypeId sink(input(\n\t\tUserId as string,\n\t\tLicenseTypeId as integer,\n\t\tLicenseNumber as string,\n\t\tIsExempt as boolean,\n\t\tIsActive as boolean,\n\t\tActivationDate as timestamp,\n\t\tExpirationDate as timestamp,\n\t\tLicenseState as string,\n\t\tID as integer,\n\t\tMID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tmapColumn(\n\t\tUserId = userID,\n\t\tLicenseTypeId = TypeId,\n\t\tLicenseNumber = {License Number},\n\t\tLicenseState = {License State}\n\t)) ~> TargetUserLicense"
+		}
+	}
+}

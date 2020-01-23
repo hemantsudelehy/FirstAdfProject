@@ -1,0 +1,223 @@
+{
+	"name": "SQL_tblUserInfo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_UserInfo",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ui_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_last_name",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_first_name",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_mi",
+				"type": "char"
+			},
+			{
+				"name": "ui_address_1",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_address_2",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_city",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_st_abbrev",
+				"type": "char"
+			},
+			{
+				"name": "ui_zip",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_phone",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_mobile_phone",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_fax",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_personal_phone",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_email",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_type",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_last_credit_prov",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_last_credit_acct",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_last_credit_pin",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_last_updated",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "ui_updated_by",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_title",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_reports_to",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_pict",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_url",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_preferences",
+				"type": "text"
+			},
+			{
+				"name": "ui_pager",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_alt_id",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_nbr_login_attempts",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_first_login_failed_date",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "ui_password_expire_date",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "ui_account_locked",
+				"type": "char"
+			},
+			{
+				"name": "ui_loan_access",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_institution_access",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_suspended",
+				"type": "char"
+			},
+			{
+				"name": "AuditUserId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AuditRecCreateTS",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "AuditRecUpdateTS",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "AuditType",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AuditServiceFlag",
+				"type": "bit"
+			},
+			{
+				"name": "ui_loan_originator_id",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_password_temporary",
+				"type": "char"
+			},
+			{
+				"name": "ui_acumen_userid",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_mfa_enrolled",
+				"type": "char"
+			},
+			{
+				"name": "ui_sms_email",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_nbr_mfa_attempts",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ui_mfa_email",
+				"type": "varchar"
+			},
+			{
+				"name": "ui_sms_provider_id",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "user_info"
+		}
+	}
+}
