@@ -1,0 +1,85 @@
+{
+	"name": "DS_SQL_Channels",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Channels",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "ch_code",
+				"type": "varchar"
+			},
+			{
+				"name": "ch_description",
+				"type": "varchar"
+			},
+			{
+				"name": "ch_date_effective",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ch_date_expires",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ch_created_by",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ch_create_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ch_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ch_type",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AuditUserId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AuditRecCreateTS",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "AuditRecUpdateTS",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "AuditType",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AuditServiceFlag",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "channels"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

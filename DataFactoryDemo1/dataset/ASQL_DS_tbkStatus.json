@@ -1,0 +1,56 @@
+{
+	"name": "ASQL_DS_tbkStatus",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_Channels",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "statID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "statName",
+				"type": "varchar"
+			},
+			{
+				"name": "statValidateParams",
+				"type": "bit"
+			},
+			{
+				"name": "UpdatedByID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "UpdatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "statActive",
+				"type": "bit"
+			},
+			{
+				"name": "statDeptIntialStatDef",
+				"type": "bit"
+			},
+			{
+				"name": "statFriendlyName",
+				"type": "varchar"
+			},
+			{
+				"name": "statDefaultLeadStatus",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbkStatus"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,56 @@
+{
+	"name": "ASQL_DS_tbkDepartment",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_tbkDepartment",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "deptID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "deptName",
+				"type": "varchar"
+			},
+			{
+				"name": "deptDescription",
+				"type": "varchar"
+			},
+			{
+				"name": "deptDefSTATid",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "deptActive",
+				"type": "bit"
+			},
+			{
+				"name": "UpdatedByID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "UpdatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "deptDefaultModule",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "ClientAccess",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbkDepartment"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
