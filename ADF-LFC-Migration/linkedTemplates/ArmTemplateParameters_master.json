@@ -1,0 +1,27 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADF-LFC-Migration"
+		},
+		"LS_ASQL_Channels_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_tbkDepartment_connectionString": {
+			"value": ""
+		},
+		"LS_SQL_Channels_connectionString": {
+			"value": ""
+		},
+		"SQL_DS_tbkchannels_connectionString": {
+			"value": ""
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}

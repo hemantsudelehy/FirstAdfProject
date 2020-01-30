@@ -1,0 +1,61 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADF-LFC-Migration"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Department')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL_Channels",
+								"type": "DatasetReference"
+							},
+							"name": "Department"
+						},
+						{
+							"dataset": {
+								"referenceName": "ASQL_DS_tbkStatus",
+								"type": "DatasetReference"
+							},
+							"name": "Status"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ASQL_DS_tbkDepartment",
+								"type": "DatasetReference"
+							},
+							"name": "TargetDepartment"
+						}
+					],
+					"transformations": [
+						{
+							"name": "UpdateIfRecordExist"
+						},
+						{
+							"name": "GetMatchingDpts"
+						}
+					],
+					"script": "source(output(\n\t\tdeptid as string,\n\t\t{Department Name} as string,\n\t\t{Department Description} as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedbyId as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select Newid() as deptid, c.ch_description as [Department Name], c.ch_description as [Department Description], \\'6ca410a9-cd01-495c-b2ff-fd0880f5fa0f\\' as deptDefSTATid, \\nCONVERT(Bit, 1) as deptActive, \\'DCA6C8B5-BFA7-46D6-9628-41442B22D262\\' as UpdatedbyId, dateadd(hh,-6,getdate()) as UpdatedDate, Convert(varchar(80), NULL) as deptDefaultModule, CONVERT(Bit, 0) as ClientAccess\\nfrom dbo. channels c where c.ch_type = 7',\n\tformat: 'query') ~> Department\nsource(output(\n\t\tstatID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT statID FROM tbkstatus WHERE statname= \\'Closing Documents Received (R)\\'',\n\tformat: 'query') ~> Status\nGetMatchingDpts alterRow(upsertIf(true())) ~> UpdateIfRecordExist\nDepartment, Status lookup(deptDefSTATid == statID,\n\tbroadcast: 'none')~> GetMatchingDpts\nUpdateIfRecordExist sink(input(\n\t\tdeptID as string,\n\t\tdeptName as string,\n\t\tdeptDescription as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedByID as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['deptID'],\n\tformat: 'table',\n\tmapColumn(\n\t\tdeptID = deptid,\n\t\tdeptName = {Department Name},\n\t\tdeptDescription = {Department Description},\n\t\tdeptDefSTATid,\n\t\tdeptActive,\n\t\tUpdatedByID = UpdatedbyId,\n\t\tUpdatedDate,\n\t\tdeptDefaultModule,\n\t\tClientAccess\n\t)) ~> TargetDepartment"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}

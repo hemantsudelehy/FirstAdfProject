@@ -1,0 +1,387 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADF-LFC-Migration"
+		},
+		"LS_ASQL_Channels_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_Channels'"
+		},
+		"LS_ASQL_tbkDepartment_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_tbkDepartment'"
+		},
+		"LS_SQL_Channels_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SQL_Channels'"
+		},
+		"SQL_DS_tbkchannels_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'SQL_DS_tbkchannels'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ASQL_Channels')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ASQL_Channels_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ASQL_tbkDepartment')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_ASQL_tbkDepartment_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_SQL_Channels')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_SQL_Channels_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SQL_DS_tbkchannels')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('SQL_DS_tbkchannels_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ASQL_DS_tbkDepartment')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_tbkDepartment",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "deptID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "deptName",
+						"type": "varchar"
+					},
+					{
+						"name": "deptDescription",
+						"type": "varchar"
+					},
+					{
+						"name": "deptDefSTATid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "deptActive",
+						"type": "bit"
+					},
+					{
+						"name": "UpdatedByID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "UpdatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "deptDefaultModule",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ClientAccess",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tbkDepartment"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_tbkDepartment')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ASQL_DS_tbkStatus')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ASQL_Channels",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "statID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "statName",
+						"type": "varchar"
+					},
+					{
+						"name": "statValidateParams",
+						"type": "bit"
+					},
+					{
+						"name": "UpdatedByID",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "UpdatedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "statActive",
+						"type": "bit"
+					},
+					{
+						"name": "statDeptIntialStatDef",
+						"type": "bit"
+					},
+					{
+						"name": "statFriendlyName",
+						"type": "varchar"
+					},
+					{
+						"name": "statDefaultLeadStatus",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "tbkStatus"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ASQL_Channels')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SQL_Channels')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SQL_Channels",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "ch_code",
+						"type": "varchar"
+					},
+					{
+						"name": "ch_description",
+						"type": "varchar"
+					},
+					{
+						"name": "ch_date_effective",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ch_date_expires",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ch_created_by",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ch_create_date",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ch_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ch_type",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AuditUserId",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AuditRecCreateTS",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AuditRecUpdateTS",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "AuditType",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AuditServiceFlag",
+						"type": "bit"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "channels"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SQL_Channels')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Department')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL_Channels",
+								"type": "DatasetReference"
+							},
+							"name": "Department",
+							"typeProperties": {}
+						},
+						{
+							"dataset": {
+								"referenceName": "ASQL_DS_tbkStatus",
+								"type": "DatasetReference"
+							},
+							"name": "Status",
+							"typeProperties": {}
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "ASQL_DS_tbkDepartment",
+								"type": "DatasetReference"
+							},
+							"name": "TargetDepartment"
+						}
+					],
+					"transformations": [
+						{
+							"name": "UpdateIfRecordExist"
+						},
+						{
+							"name": "GetMatchingDpts"
+						}
+					],
+					"script": "source(output(\n\t\tdeptid as string,\n\t\t{Department Name} as string,\n\t\t{Department Description} as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedbyId as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select Newid() as deptid, c.ch_description as [Department Name], c.ch_description as [Department Description], \\'6ca410a9-cd01-495c-b2ff-fd0880f5fa0f\\' as deptDefSTATid, \\nCONVERT(Bit, 1) as deptActive, \\'DCA6C8B5-BFA7-46D6-9628-41442B22D262\\' as UpdatedbyId, dateadd(hh,-6,getdate()) as UpdatedDate, Convert(varchar(80), NULL) as deptDefaultModule, CONVERT(Bit, 0) as ClientAccess\\nfrom dbo. channels c where c.ch_type = 7',\n\tformat: 'query') ~> Department\nsource(output(\n\t\tstatID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT statID FROM tbkstatus WHERE statname= \\'Closing Documents Received (R)\\'',\n\tformat: 'query') ~> Status\nGetMatchingDpts alterRow(upsertIf(true())) ~> UpdateIfRecordExist\nDepartment, Status lookup(deptDefSTATid == statID,\n\tbroadcast: 'none')~> GetMatchingDpts\nUpdateIfRecordExist sink(input(\n\t\tdeptID as string,\n\t\tdeptName as string,\n\t\tdeptDescription as string,\n\t\tdeptDefSTATid as string,\n\t\tdeptActive as boolean,\n\t\tUpdatedByID as string,\n\t\tUpdatedDate as timestamp,\n\t\tdeptDefaultModule as string,\n\t\tClientAccess as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['deptID'],\n\tformat: 'table',\n\tmapColumn(\n\t\tdeptID = deptid,\n\t\tdeptName = {Department Name},\n\t\tdeptDescription = {Department Description},\n\t\tdeptDefSTATid,\n\t\tdeptActive,\n\t\tUpdatedByID = UpdatedbyId,\n\t\tUpdatedDate,\n\t\tdeptDefaultModule,\n\t\tClientAccess\n\t)) ~> TargetDepartment"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_SQL_Channels')]",
+				"[concat(variables('factoryId'), '/datasets/ASQL_DS_tbkStatus')]",
+				"[concat(variables('factoryId'), '/datasets/ASQL_DS_tbkDepartment')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PL_Departments')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "DF_Department",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_Department",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Department": {},
+									"Status": {},
+									"TargetDepartment": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							}
+						}
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DF_Department')]"
+			]
+		}
+	]
+}
