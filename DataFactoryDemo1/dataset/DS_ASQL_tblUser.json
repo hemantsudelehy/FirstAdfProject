@@ -1,0 +1,175 @@
+{
+	"name": "DS_ASQL_tblUser",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_tblUserType",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "userID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "userLogonName",
+				"type": "varchar"
+			},
+			{
+				"name": "userPassword",
+				"type": "varchar"
+			},
+			{
+				"name": "userPWexpDt",
+				"type": "smalldatetime",
+				"precision": 16,
+				"scale": 0
+			},
+			{
+				"name": "userFirstName",
+				"type": "varchar"
+			},
+			{
+				"name": "userLastName",
+				"type": "varchar"
+			},
+			{
+				"name": "userBRANid",
+				"type": "varchar"
+			},
+			{
+				"name": "userAcctExec",
+				"type": "bit"
+			},
+			{
+				"name": "userActive",
+				"type": "bit"
+			},
+			{
+				"name": "userPhone",
+				"type": "varchar"
+			},
+			{
+				"name": "userFax",
+				"type": "varchar"
+			},
+			{
+				"name": "userEmail",
+				"type": "varchar"
+			},
+			{
+				"name": "userRSTYid",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "userCommissionPerc",
+				"type": "decimal",
+				"precision": 16,
+				"scale": 6
+			},
+			{
+				"name": "UpdatedByID",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "UpdatedDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "userposID",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "userMI",
+				"type": "varchar"
+			},
+			{
+				"name": "userEXT",
+				"type": "varchar"
+			},
+			{
+				"name": "userLogonAccountIsLocked",
+				"type": "bit"
+			},
+			{
+				"name": "userConsecLogonFailures",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "userForcePWChange",
+				"type": "bit"
+			},
+			{
+				"name": "userClientID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "userType",
+				"type": "varchar"
+			},
+			{
+				"name": "userIsPrice",
+				"type": "bit"
+			},
+			{
+				"name": "userIsManager",
+				"type": "bit"
+			},
+			{
+				"name": "userManager",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "userSecretQuestion",
+				"type": "varchar"
+			},
+			{
+				"name": "userSecretAnswer",
+				"type": "varchar"
+			},
+			{
+				"name": "userAuthToken",
+				"type": "varchar"
+			},
+			{
+				"name": "userAuthTokenDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "userAuthTokenEmail",
+				"type": "varchar"
+			},
+			{
+				"name": "userAuthTokenData",
+				"type": "varchar"
+			},
+			{
+				"name": "userAuthTokenPhone",
+				"type": "varchar"
+			},
+			{
+				"name": "userAuthTokenSmsProviderId",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "userLastSuccessfullLogin",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tblUser"
+		}
+	}
+}

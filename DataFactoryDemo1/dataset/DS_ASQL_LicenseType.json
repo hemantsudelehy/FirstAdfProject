@@ -1,0 +1,55 @@
+{
+	"name": "DS_ASQL_LicenseType",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_tbkLicenseType",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TypeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Description",
+				"type": "varchar"
+			},
+			{
+				"name": "LoanLevelFieldId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LoanLevelExemptFieldId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ActivationDate",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ExpirationDate",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "State",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "IsNMLS",
+				"type": "bit"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbkLicenseType"
+		}
+	}
+}
