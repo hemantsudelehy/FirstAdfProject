@@ -17,6 +17,21 @@
 		"SQL_DS_tbkchannels_connectionString": {
 			"value": ""
 		},
+		"LS_SQL_user_info_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_tbkLicenseType_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_tbluser_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_tblUserType_connectionString": {
+			"value": ""
+		},
+		"LS_ASQL_tbmUserLicense_connectionString": {
+			"value": ""
+		},
 		"containerUri": {
 			"value": ""
 		},

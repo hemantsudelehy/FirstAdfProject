@@ -23,6 +23,26 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'SQL_DS_tbkchannels'"
 		},
+		"LS_SQL_user_info_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_SQL_user_info'"
+		},
+		"LS_ASQL_tbkLicenseType_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_tbkLicenseType'"
+		},
+		"LS_ASQL_tbluser_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_tbluser'"
+		},
+		"LS_ASQL_tblUserType_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_tblUserType'"
+		},
+		"LS_ASQL_tbmUserLicense_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LS_ASQL_tbmUserLicense'"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -61,6 +81,21 @@
 					},
 					"SQL_DS_tbkchannels_connectionString": {
 						"value": "[parameters('SQL_DS_tbkchannels_connectionString')]"
+					},
+					"LS_SQL_user_info_connectionString": {
+						"value": "[parameters('LS_SQL_user_info_connectionString')]"
+					},
+					"LS_ASQL_tbkLicenseType_connectionString": {
+						"value": "[parameters('LS_ASQL_tbkLicenseType_connectionString')]"
+					},
+					"LS_ASQL_tbluser_connectionString": {
+						"value": "[parameters('LS_ASQL_tbluser_connectionString')]"
+					},
+					"LS_ASQL_tblUserType_connectionString": {
+						"value": "[parameters('LS_ASQL_tblUserType_connectionString')]"
+					},
+					"LS_ASQL_tbmUserLicense_connectionString": {
+						"value": "[parameters('LS_ASQL_tbmUserLicense_connectionString')]"
 					}
 				}
 			},
