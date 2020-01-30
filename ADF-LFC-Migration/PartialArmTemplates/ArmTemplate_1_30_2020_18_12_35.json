@@ -1,0 +1,71 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADF-LFC-Migration"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_UserLicense')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SQL_user_info",
+								"type": "DatasetReference"
+							},
+							"name": "UserLicense"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_LicenseType",
+								"type": "DatasetReference"
+							},
+							"name": "LicenseType"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_tblUser",
+								"type": "DatasetReference"
+							},
+							"name": "User"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL_tbmUserLicense",
+								"type": "DatasetReference"
+							},
+							"name": "TargetUserLicense"
+						}
+					],
+					"transformations": [
+						{
+							"name": "SelectValidLicense"
+						},
+						{
+							"name": "SelectValidUser"
+						},
+						{
+							"name": "UpdateIfExist"
+						}
+					],
+					"script": "source(output(\n\t\t{Last Name} as string,\n\t\t{First Name} as string,\n\t\t{User Name} as string,\n\t\tIsExempt as boolean,\n\t\tIsActive as boolean,\n\t\t{License Type} as string,\n\t\tColumn1 as string,\n\t\t{License Number} as string,\n\t\t{License State} as string,\n\t\t{License Activation Date} as string,\n\t\t{License Expiration Date} as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT\\nui.ui_last_name as [Last Name]\\n,ui.ui_first_name as [First Name]\\n,lg.lg_name as [User Name]\\n, CONVERT(Bit, 0) as [IsExempt]\\n, CONVERT(Bit, 1) as [IsActive]\\n, CASE \\n\tWHEN (ui.ui_loan_originator_id IS NOT NULL AND ui.ui_loan_originator_id !=\\'\\') THEN \\'Origination\\'\\n\tWHEN usl.StateLicenseId IS NOT NULL THEN \\'NLMS\\'\\n\tELSE \\'\\'\\n\tEND as [License Type]\\n,ui.ui_loan_originator_id as [Column1]\\n,usl.StateLicenseId as [License Number]\\n,usl.StateAbbreviation as [License State]\\n,\\'\\' as [License Activation Date]\\n,\\'\\' as [License Expiration Date]\\nfrom user_info ui\\nleft join login lg on ui.ui_id = lg.ui_id\\nleft join UserStateLicense usl on ui.ui_id = usl.userid\\nwhere ui.ui_type != \\'Cons\\'\\nand ui.ui_suspended = \\'N\\'',\n\tformat: 'query') ~> UserLicense\nsource(output(\n\t\tTypeId as integer,\n\t\tDescription as string,\n\t\tLoanLevelFieldId as integer,\n\t\tLoanLevelExemptFieldId as integer,\n\t\tActivationDate as integer,\n\t\tExpirationDate as integer,\n\t\tState as integer,\n\t\tIsNMLS as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> LicenseType\nsource(output(\n\t\tuserID as string,\n\t\tuserLogonName as string,\n\t\tuserPassword as string,\n\t\tuserPWexpDt as timestamp,\n\t\tuserFirstName as string,\n\t\tuserLastName as string,\n\t\tuserBRANid as string,\n\t\tuserAcctExec as boolean,\n\t\tuserActive as boolean,\n\t\tuserPhone as string,\n\t\tuserFax as string,\n\t\tuserEmail as string,\n\t\tuserRSTYid as integer,\n\t\tuserCommissionPerc as decimal(16,6),\n\t\tUpdatedByID as string,\n\t\tUpdatedDate as timestamp,\n\t\tuserposID as integer,\n\t\tuserMI as string,\n\t\tuserEXT as string,\n\t\tuserLogonAccountIsLocked as boolean,\n\t\tuserConsecLogonFailures as integer,\n\t\tuserForcePWChange as boolean,\n\t\tuserClientID as integer,\n\t\tuserType as string,\n\t\tuserIsPrice as boolean,\n\t\tuserIsManager as boolean,\n\t\tuserManager as string,\n\t\tuserSecretQuestion as string,\n\t\tuserSecretAnswer as string,\n\t\tuserAuthToken as string,\n\t\tuserAuthTokenDate as timestamp,\n\t\tuserAuthTokenEmail as string,\n\t\tuserAuthTokenData as string,\n\t\tuserAuthTokenPhone as string,\n\t\tuserAuthTokenSmsProviderId as string,\n\t\tuserLastSuccessfullLogin as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> User\nUserLicense, LicenseType join({License Type} == Description,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> SelectValidLicense\nSelectValidLicense, User join({User Name} == userLogonName,\n\tjoinType:'inner',\n\tbroadcast: 'none')~> SelectValidUser\nSelectValidUser alterRow(upsertIf(true())) ~> UpdateIfExist\nUpdateIfExist sink(input(\n\t\tUserId as string,\n\t\tLicenseTypeId as integer,\n\t\tLicenseNumber as string,\n\t\tIsExempt as boolean,\n\t\tIsActive as boolean,\n\t\tActivationDate as timestamp,\n\t\tExpirationDate as timestamp,\n\t\tLicenseState as string,\n\t\tID as integer,\n\t\tMID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['UserId'],\n\tformat: 'table',\n\tmapColumn(\n\t\tUserId = userID,\n\t\tLicenseTypeId = TypeId,\n\t\tLicenseNumber = {License Number},\n\t\tIsExempt,\n\t\tIsActive,\n\t\tLicenseState = {License State},\n\t\tActivationDate = {License Activation Date},\n\t\tExpirationDate = {License Expiration Date}\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> TargetUserLicense"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
