@@ -1,0 +1,63 @@
+{
+	"name": "DS_ASQL_tbmUserLicense",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ASQL_tbmUserLicense",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "UserId",
+				"type": "uniqueidentifier"
+			},
+			{
+				"name": "LicenseTypeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LicenseNumber",
+				"type": "varchar"
+			},
+			{
+				"name": "IsExempt",
+				"type": "bit"
+			},
+			{
+				"name": "IsActive",
+				"type": "bit"
+			},
+			{
+				"name": "ActivationDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ExpirationDate",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "LicenseState",
+				"type": "char"
+			},
+			{
+				"name": "ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "MID",
+				"type": "uniqueidentifier"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "tbmUserLicense"
+		}
+	}
+}
